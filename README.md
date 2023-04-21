@@ -1,4 +1,4 @@
-# web-scraper
+# Web Scraper
 
 ## The following can be scraped right now
 - full html page
