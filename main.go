@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"github.com/PuerkitoBio/goquery"
 	"fmt"
+	"strings"
 	"os"
+	"encoding/json"
 )
 
 func main() {
@@ -12,6 +14,10 @@ func main() {
 
 	fmt.Println("Pls enter a url: ")
 	fmt.Scan(&webpage)
+
+	var linkYesNo string
+	fmt.Println("Do you also want to scrape all of the links separately?")
+	fmt.Scan(&linkYesNo)
 
 	response, err := http.Get(webpage)
 	if err != nil {
@@ -28,10 +34,36 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	if(strings.ToUpper(linkYesNo) == "Y") {
+		getLinks(document)
+	}
+
 	title := document.Find("title").Text()
 	content, err := document.Find("html").Html()
 	if err != nil {
 		panic(err)
 	}
+
 	os.WriteFile(title + ".html", []byte(content), 0644)
+}
+
+
+
+
+func getLinks(document *goquery.Document) {
+	title := document.Find("title").Text()
+	var links []string
+
+	//find all links and add to slice
+	document.Find("a[href]").Each(func(index int, item *goquery.Selection) {
+		link, exists := item.Attr("href")
+		if exists {
+			links = append(links, link)
+		}
+	})
+
+	file, _ := json.MarshalIndent(links, "", " ")
+
+	//write to file
+	os.WriteFile("Links_" + title + ".json", file, 0644)
 }
