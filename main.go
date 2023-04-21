@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 )
 
+//main programm
 func main() {
 	var webpage string
 
@@ -44,12 +45,11 @@ func main() {
 		panic(err)
 	}
 
+	//create html file
 	os.WriteFile(title + ".html", []byte(content), 0644)
 }
 
-
-
-
+//scrape all links from html document
 func getLinks(document *goquery.Document) {
 	title := document.Find("title").Text()
 	var links []string
@@ -62,6 +62,7 @@ func getLinks(document *goquery.Document) {
 		}
 	})
 
+	//creates byte array for json file
 	file, _ := json.MarshalIndent(links, "", " ")
 
 	//write to file
